@@ -24,7 +24,7 @@ function AFNtoAFD(afn) {
     };
 
     const gerarNomeEstado = (estados) => estados.sort().join(',');
-    
+
     const combinacoesLista = gerarCombinacoes(afn.estados);
     const delta = afn.transicoes;
     const alfabeto = afn.alfabeto;
