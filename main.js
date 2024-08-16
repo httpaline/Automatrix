@@ -2,6 +2,8 @@ const readline = require('readline');
 const AFN = require('./afn');
 const AFNtoAFD = require('./converter');
 const { simularAFN, simularAFD } = require('./aceita');
+const minimizaAFD = require('./minimizacao');
+const AFD = require('./afd');
 
 let afn = null;
 let afd = null;
@@ -16,7 +18,7 @@ const rl = readline.createInterface({
 function pedirTransicoesParaEstado(estados, alfabeto, transicoes, estado, i, callback) {
     if (i < alfabeto.length) {
         let simbolo = alfabeto[i];
-        rl.question(`${estado}----${simbolo}----> `, (inputTransicoes) => {
+        rl.question(`${estado} ----${simbolo}----> `, (inputTransicoes) => {
             transicoes[estado] = transicoes[estado] || {};
             transicoes[estado][simbolo] = inputTransicoes.split('|').map(d => d.trim());
             pedirTransicoesParaEstado(estados, alfabeto, transicoes, estado, i + 1, callback);
@@ -70,6 +72,39 @@ function criarAFN(callback) {
     });
 }
 
+//cria o afd
+function criarAFD(callback) {
+    rl.question('Digite os estados separados por vírgula: ', (inputEstados) => {
+        const estados = inputEstados.split(',').map(e => e.trim());
+
+        rl.question('Digite o alfabeto separado por vírgula: ', (inputAlfabeto) => {
+            const alfabeto = inputAlfabeto.split(',').map(a => a.trim());
+            let transicoes = {};
+
+            pedirTransicoes(estados, alfabeto, transicoes, 0, () => {
+                rl.question('Digite o estado inicial: ', (estadoInicial) => {
+                    rl.question('Digite os estados finais separados por vírgula: ', (inputEstadosFinais) => {
+                        const estadosFinais = inputEstadosFinais.split(',').map(e => e.trim());
+
+                        // Criando o AFN com os dados fornecidos pelo usuário
+                        afd = new AFD(estados, alfabeto, transicoes, estadoInicial, estadosFinais);
+
+                        console.log('\n★★★★★★ AFD GERADO ★★★★★★');
+                        console.log('Estados:', afd.estados);
+                        console.log('Alfabeto:', afd.alfabeto);
+                        console.log('Transições:', afd.transicoes);
+                        console.log('Estado Inicial:', afd.estadoInicial);
+                        console.log('Estados Finais:', afd.estadosFinais);
+
+                        callback();
+                    });
+                });
+            });
+        });
+    });
+}
+
+
 // Função para converter AFN para AFD
 function converterAFNtoAFD(callback) {
     if (afn) {
@@ -109,25 +144,47 @@ function simularAceitacao(callback) {
     });
 }
 
+function minimizarAFD(callback) {
+    if (afd) {
+        const afdMinimizado = minimizaAFD(afd);
+        console.log('\n★★★★★★ AFD MINIMIZADO ★★★★★★');
+        console.log('Estados do AFD minimizado:', afdMinimizado.estados);
+        console.log('Transições do AFD minimizado:', afdMinimizado.transicoes);
+        console.log('Estado inicial do AFD minimizado:', afdMinimizado.estadoInicial);
+        console.log('Estados finais do AFD minimizado:', afdMinimizado.estadosFinais);
+    } else {
+        console.log('\nPor favor, crie um AFN e converta-o para AFD primeiro.');
+    }
+    callback();
+}
+
 // Função para exibir o menu de ações
 function exibirMenu() {
     console.log('\n★★★★★★ MENU DE AÇÕES ★★★★★★★');
     console.log('1. Criar AFN');
-    console.log('2. Converter AFN para AFD');
-    console.log('3. Simular aceitação de palavra');
-    console.log('4. Sair');
+    console.log('2. Criar AFD');
+    console.log('3. Converter AFN para AFD');
+    console.log('4. Simular aceitação de palavra');
+    console.log('5. Minimizar AFD');
+    console.log('6. Sair')
     rl.question('Escolha uma opção: ', (opcao) => {
         switch (opcao) {
             case '1':
                 criarAFN(exibirMenu);
                 break;
             case '2':
-                converterAFNtoAFD(exibirMenu);
+                criarAFD(exibirMenu);   
                 break;
             case '3':
-                simularAceitacao(exibirMenu);
+                converterAFNtoAFD(exibirMenu);
                 break;
             case '4':
+                simularAceitacao(exibirMenu);
+                break;
+            case '5':
+                minimizarAFD(exibirMenu);
+                break;
+            case '6':
                 rl.close();
                 break;
             default:
