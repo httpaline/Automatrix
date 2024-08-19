@@ -25,20 +25,29 @@ function AFNtoAFD(afn) {
 
     const gerarNomeEstado = (estados) => estados.sort().join(',');
 
+    // Gerar todas as combinações de estados
     const combinacoesLista = gerarCombinacoes(afn.estados);
+    
+    // Criar um mapeamento para combinações de estados
+    const nomeEstadoMap = {};
+    combinacoesLista.forEach((combinacao, index) => {
+        const nome = `s${index}`;
+        nomeEstadoMap[gerarNomeEstado(combinacao)] = nome;
+    });
+
+    // Inicializar tabela de transição do AFD
     const delta = afn.transicoes;
     const alfabeto = afn.alfabeto;
     const finais = afn.estadosFinais;
     const tabelaDeTransicaoAFD = {};
-    let listaAux1 = [];
-    let listaAux2 = new Set();
 
     // Construir a tabela de transição para o AFD
     combinacoesLista.forEach(combinacao => {
         const combinacaoStr = gerarNomeEstado(combinacao);
+        const nomeCombinacao = nomeEstadoMap[combinacaoStr];
 
         alfabeto.forEach(simbolo => {
-            listaAux2 = new Set();
+            const listaAux2 = new Set();
 
             combinacao.forEach(elemento => {
                 const transicoesElemento = delta[elemento] && delta[elemento][simbolo] ? delta[elemento][simbolo] : [];
@@ -46,17 +55,20 @@ function AFNtoAFD(afn) {
             });
 
             const listaAux2Str = Array.from(listaAux2).sort().join(',');
-            tabelaDeTransicaoAFD[`${combinacaoStr},${simbolo}`] = listaAux2Str;
+            const nomeDestino = nomeEstadoMap[listaAux2Str] || '';
+
+            tabelaDeTransicaoAFD[`${nomeCombinacao},${simbolo}`] = nomeDestino;
         });
     });
 
     // Identificar estados finais no AFD
     const estadosFinais = combinacoesLista
         .map(combinacao => gerarNomeEstado(combinacao))
-        .filter(combinacaoStr => combinacaoStr.split(',').some(e => finais.includes(e)));
+        .filter(combinacaoStr => combinacaoStr.split(',').some(e => finais.includes(e)))
+        .map(combinacaoStr => nomeEstadoMap[combinacaoStr]);
 
     // Reduzir tabela de transição para considerar apenas estados alcançáveis
-    let estadosReduzidos = [afn.estadoInicial];
+    let estadosReduzidos = [nomeEstadoMap[afn.estadoInicial]];
 
     Object.keys(tabelaDeTransicaoAFD).forEach(key => {
         const [estado, simbolo] = key.split(',');
@@ -69,7 +81,7 @@ function AFNtoAFD(afn) {
 
     let alcancaveis = [];
     estadosReduzidos.forEach(estado => {
-        if (estado === afn.estadoInicial) {
+        if (estado === nomeEstadoMap[afn.estadoInicial]) {
             alcancaveis.push(estado);
             return;
         }
@@ -101,7 +113,7 @@ function AFNtoAFD(afn) {
         });
     });
 
-    const afd = new AFD(estadosReduzidos, alfabeto, Reduzida_AFD, afn.estadoInicial, finaisReduzidos);
+    const afd = new AFD(estadosReduzidos, alfabeto, Reduzida_AFD, nomeEstadoMap[afn.estadoInicial], finaisReduzidos);
     return afd;
 }
 
