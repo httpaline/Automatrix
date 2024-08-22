@@ -168,7 +168,7 @@ function minimizarAFD(callback) {
     callback();
 }
 
-// Função para exibir o menu de ações
+//exibe o menu de ações
 function exibirMenu() {
     console.log('\n★★★★★★ MENU DE AÇÕES ★★★★★★★');
     console.log('1. Criar AFN');
