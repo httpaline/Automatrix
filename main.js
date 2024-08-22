@@ -2,11 +2,12 @@ const readline = require('readline');
 const AFN = require('./afn');
 const AFNtoAFD = require('./converter');
 const { simularAFN, simularAFD } = require('./aceita');
-const minimizaAFD = require('./minimizacao');
+const { minimizarAFDDireto, minimizarAFDConvertido } = require('./minimizacao');
 const AFD = require('./afd');
 
 let afn = null;
 let afd = null;
+let afdConvertido = false;
 
 // Configuração da interface de entrada do usuário
 const rl = readline.createInterface({
@@ -72,7 +73,7 @@ function criarAFN(callback) {
     });
 }
 
-//cria o afd
+// Função para criar um AFD
 function criarAFD(callback) {
     rl.question('Digite os estados separados por vírgula: ', (inputEstados) => {
         const estados = inputEstados.split(',').map(e => e.trim());
@@ -86,8 +87,9 @@ function criarAFD(callback) {
                     rl.question('Digite os estados finais separados por vírgula: ', (inputEstadosFinais) => {
                         const estadosFinais = inputEstadosFinais.split(',').map(e => e.trim());
 
-                        // Criando o AFN com os dados fornecidos pelo usuário
+                        // Criando o AFD com os dados fornecidos pelo usuário
                         afd = new AFD(estados, alfabeto, transicoes, estadoInicial, estadosFinais);
+                        afdConvertido = false;
 
                         console.log('\n★★★★★★ AFD GERADO ★★★★★★');
                         console.log('Estados:', afd.estados);
@@ -104,11 +106,11 @@ function criarAFD(callback) {
     });
 }
 
-
 // Função para converter AFN para AFD
 function converterAFNtoAFD(callback) {
     if (afn) {
         afd = AFNtoAFD(afn);
+        afdConvertido = true;
         console.log('\n★★★★★★ AFD GERADO ★★★★★★');
         console.log('Estados do AFD:', afd.estados);
         console.log('Transições do AFD:', afd.transicoes);
@@ -137,16 +139,24 @@ function simularAceitacao(callback) {
             const aceitaAFD = simularAFD(afd, palavra);
             console.log(`Palavra "${palavra}" aceita pelo AFD? ${aceitaAFD ? 'Sim' : 'Não'}`);
         } else {
-            console.log('\nPor favor, converta o AFN para AFD antes de simular no AFD. ');
+            console.log('\nPor favor, converta o AFN para AFD antes de simular no AFD.');
         }
 
         callback();
     });
 }
 
+// Função para minimizar um AFD
 function minimizarAFD(callback) {
     if (afd) {
-        const afdMinimizado = minimizaAFD(afd);
+        let afdMinimizado;
+        if (afdConvertido) {
+            // AFD foi convertido de um AFN
+            afdMinimizado = minimizarAFDConvertido(afd);
+        } else {
+            // AFD foi criado diretamente
+            afdMinimizado = minimizarAFDDireto(afd);
+        }
         console.log('\n★★★★★★ AFD MINIMIZADO ★★★★★★');
         console.log('Estados do AFD minimizado:', afdMinimizado.estados);
         console.log('Transições do AFD minimizado:', afdMinimizado.transicoes);
@@ -166,14 +176,14 @@ function exibirMenu() {
     console.log('3. Converter AFN para AFD');
     console.log('4. Simular aceitação de palavra');
     console.log('5. Minimizar AFD');
-    console.log('6. Sair')
+    console.log('6. Sair');
     rl.question('Escolha uma opção: ', (opcao) => {
         switch (opcao) {
             case '1':
                 criarAFN(exibirMenu);
                 break;
             case '2':
-                criarAFD(exibirMenu);   
+                criarAFD(exibirMenu);
                 break;
             case '3':
                 converterAFNtoAFD(exibirMenu);
