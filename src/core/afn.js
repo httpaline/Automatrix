@@ -4,7 +4,7 @@ class AFN {
         this.transicoes = transicoes;
         this.alfabeto = alfabeto;
         this.estadoInicial = estadoInicial;
-        this.estadosFinais = estadosFinais || []; // Garantir que não seja undefined
+        this.estadosFinais = estadosFinais || []; //evita undefined
     }
 }
 

@@ -4,7 +4,7 @@ const AFNtoAFD = require('./core/converter');
 const { simularAFN, simularAFD } = require('./core/aceita');
 const { minimizarAFDDireto, minimizarAFDConvertido } = require('./core/minimizacao');
 const AFD = require('./core/afd');
-const { executarMaquinaTuring } = require('./core/MT'); 
+const { executarMaquinaTuring } = require('./core/MT');
 const { executarMaquinaTuringUnaria } = require('./core/MTunario');
 const { Console } = require('console');
 /*const { 
@@ -13,6 +13,7 @@ const { Console } = require('console');
     gerarImagemAFNParaAFD, 
     gerarImagemAFDMinimizado 
 } = require('./draw');*/
+//const ERtoAFN = require('./core/ER');
 
 
 let afn = null;
@@ -205,6 +206,30 @@ function executarMaquinaUnaria(callback) {
 }
 
 
+function converterERparaAFN(callback) {
+    rl.question('Digite a expressão regular: ', (er) => {
+        try {
+            const erToAFN = new ERtoAFN(er);
+            afn = erToAFN.converter();
+
+            console.log('\n★★★★★★ AFN GERADO DA ER ★★★★★★');
+            console.log('Estados:', afn.estados);
+            console.log('Alfabeto:', afn.alfabeto);
+            console.log('Transições:', afn.transicoes);
+            console.log('Estado Inicial:', afn.estadoInicial);
+            console.log('Estados Finais:', afn.estadosFinais);
+
+            //gerarImagemAFN(afn);
+
+            callback();
+        } catch (error) {
+            console.log('Erro ao converter a expressão regular:', error.message);
+            callback();
+        }
+    });
+}
+
+
 // Exibe o menu de ações
 function exibirMenu() {
     console.log('▄▀█ █░█ ▀█▀ █▀█ █▀▄▀█ ▄▀█ ▀█▀ █▀█ █ ▀▄▀');
@@ -215,9 +240,10 @@ function exibirMenu() {
     console.log('3. Converter AFN para AFD');
     console.log('4. Simular aceitação de palavra');
     console.log('5. Minimizar AFD');
-    console.log('6. Executar Máquina de Turing de Cópia'); 
+    console.log('6. Executar Máquina de Turing de Cópia');
     console.log('7. Executar Máquina de Turing Unária');
-    console.log('8. Sair.');
+    console.log('8. Coverter Expressão Regular para AFN.');
+    console.log('9. Sair.');
     rl.question('Escolha uma opção: ', (opcao) => {
         switch (opcao) {
             case '1':
@@ -236,14 +262,17 @@ function exibirMenu() {
                 minimizarAFD(exibirMenu);
                 break;
             case '6':
-                executarMaquina(exibirMenu); 
+                executarMaquina(exibirMenu);
                 break;
             case '7':
                 executarMaquinaUnaria(exibirMenu);
                 break;
             case '8':
+                converterERparaAFN(exibirMenu);
+                break;
+            case '9':
                 rl.close();
-                break;    
+                break;
             default:
                 console.log('Opção inválida. Tente novamente.');
                 exibirMenu();

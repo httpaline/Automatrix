@@ -13,12 +13,12 @@ class Estado {
       this.transicoes = transicoes;
       this.estadoAtual = estadoInicial;
       this.estadoFinal = estadoFinal;
-      this.i = 1;  // Começa a leitura na posição após o '_'
+      this.i = 1;  
       this.fita = [];
     }
   
     ler(fita) {
-      this.fita = ['_'].concat([...fita], ['_', '_']);  // Adiciona delimitadores e espaço para a cópia
+      this.fita = ['_'].concat([...fita], ['_', '_']);  //adiciona delimitadores e espaço para a cópia
       console.log("Fita inicial:", this.fita.join(''));
       while (this.estadoAtual !== this.estadoFinal) {
         const simboloAtual = this.fita[this.i];
@@ -41,14 +41,14 @@ class Estado {
         console.log("Fita atual:", this.fita.join(''), "| Cabeçote em:", this.i, "| Estado:", this.estadoAtual);
       }
   
-      // Encontrar a posição do primeiro delimitador '_'
+      //encontra a posição do primeiro delimitador '_'
       const posFinal = this.fita.indexOf('_', this.fita.indexOf('_') + 1);
   
-      // Mostrar a fita copiada
-      const fitaOriginal = this.fita.slice(1, posFinal).join(''); // Extrai a fita original
-      const fitaCopiada = this.fita.slice(posFinal + 1).join(''); // Extrai a fita copiada
+    
+      const fitaOriginal = this.fita.slice(1, posFinal).join(''); //fita original
+      const fitaCopiada = this.fita.slice(posFinal + 1).join(''); //fita copiada
   
-      console.log("Fita copiada:\n", fitaOriginal + fitaCopiada);  // Exibe a fita copiada
+      console.log("Fita copiada:\n", fitaOriginal + fitaCopiada); 
     }
   }
   

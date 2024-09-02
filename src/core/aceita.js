@@ -28,32 +28,27 @@ function simularAFN(afn, palavra) {
 }
 
 function simularAFD(afd, palavra) {
-    // Função interna para simular a aceitação de uma palavra a partir do estado atual
+    //simula aceitação de uma palavra a partir do estado atual
     function explorarEstado(estadoAtual, palavraRestante) {
         if (palavraRestante.length === 0) {
-            // Verifica se o estado atual é um estado final
+            //o estado atual é final?
             return afd.estadosFinais.includes(estadoAtual);
         }
 
         let simbolo = palavraRestante[0];
         let proximoEstado = afd.transicoes[`${estadoAtual},${simbolo}`];
 
-        // Se não há transição para o símbolo a partir do estado atual, a palavra não é aceita
         if (!proximoEstado) {
             console.log(`Nenhuma transição para o símbolo '${simbolo}' a partir do estado '${estadoAtual}'`);
             return false;
         }
 
-        // Continua a simulação com o próximo símbolo e o próximo estado
+        //continua a simulação
         return explorarEstado(proximoEstado, palavraRestante.slice(1));
     }
 
-    // Inicia a simulação a partir do estado inicial
+    //inicia simulação a partir do estado inicial
     return explorarEstado(afd.estadoInicial, palavra);
 }
-
-
-
-
 
 module.exports = { simularAFN, simularAFD };

@@ -1,7 +1,7 @@
 const AFD = require('./afd');
 
 function AFNtoAFD(afn) {
-    // Função para gerar combinações de estados
+    //gera combinações de estados
     const gerarCombinacoes = (arr) => {
         let resultado = [];
         for (let i = 1; i <= arr.length; i++) {
@@ -25,23 +25,22 @@ function AFNtoAFD(afn) {
 
     const gerarNomeEstado = (estados) => estados.sort().join(',');
 
-    // Gerar todas as combinações de estados
     const combinacoesLista = gerarCombinacoes(afn.estados);
     
-    // Criar um mapeamento para combinações de estados
+    //mapeamento para combinações de estados
     const nomeEstadoMap = {};
     combinacoesLista.forEach((combinacao, index) => {
         const nome = `s${index}`;
         nomeEstadoMap[gerarNomeEstado(combinacao)] = nome;
     });
 
-    // Inicializar tabela de transição do AFD
+    //tabela de transição do AFD
     const delta = afn.transicoes;
     const alfabeto = afn.alfabeto;
     const finais = afn.estadosFinais;
     const tabelaDeTransicaoAFD = {};
 
-    // Construir a tabela de transição para o AFD
+    //construir a tabela de transição
     combinacoesLista.forEach(combinacao => {
         const combinacaoStr = gerarNomeEstado(combinacao);
         const nomeCombinacao = nomeEstadoMap[combinacaoStr];
@@ -61,13 +60,13 @@ function AFNtoAFD(afn) {
         });
     });
 
-    // Identificar estados finais no AFD
+    //identifica estados finais
     const estadosFinais = combinacoesLista
         .map(combinacao => gerarNomeEstado(combinacao))
         .filter(combinacaoStr => combinacaoStr.split(',').some(e => finais.includes(e)))
         .map(combinacaoStr => nomeEstadoMap[combinacaoStr]);
 
-    // Reduzir tabela de transição para considerar apenas estados alcançáveis
+    //gera tabela de transição reduzida
     let estadosReduzidos = [nomeEstadoMap[afn.estadoInicial]];
 
     Object.keys(tabelaDeTransicaoAFD).forEach(key => {
@@ -99,7 +98,7 @@ function AFNtoAFD(afn) {
 
     estadosReduzidos = alcancaveis;
 
-    // Remover estados que retornam a eles mesmos em todas as transições
+    //remove estados que retornam a ele mesmo
     estadosReduzidos = estadosReduzidos.filter(estado => {
         return new Set(alfabeto.map(simbolo => tabelaDeTransicaoAFD[`${estado},${simbolo}`])).size > 1;
     });

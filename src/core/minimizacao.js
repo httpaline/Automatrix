@@ -1,14 +1,9 @@
 const AFD = require('./afd');
-
-/**
- * Minimiza um AFD passado diretamente.
- * @param {Object} afd - O AFD a ser minimizado.
- * @returns {AFD} - O AFD minimizado.
- */
+ 
 function minimizarAFDDireto(afd) {
     const { estados, alfabeto, transicoes, estadoInicial, estadosFinais } = afd;
 
-    // Passo 1: Inicializar a tabela de distinção
+    //inicializa tabela
     let distincoes = {};
     estados.forEach((e1, i) => {
         estados.slice(i + 1).forEach(e2 => {
@@ -17,7 +12,7 @@ function minimizarAFDDireto(afd) {
         });
     });
 
-    // Passo 2: Refinar a tabela de distinção
+    //refina tabela
     let alterou;
     do {
         alterou = false;
@@ -40,7 +35,7 @@ function minimizarAFDDireto(afd) {
         });
     } while (alterou);
 
-    // Passo 3: Agrupar estados indistinguíveis
+    //agrupa estados inatingíveis
     let grupos = {};
     estados.forEach(e1 => {
         const grupo = Object.keys(grupos).find(grp => {
@@ -53,11 +48,11 @@ function minimizarAFDDireto(afd) {
         }
     });
 
-    // Corrigir agrupamento para a forma desejada
+    //formata o agrupamento
     let estadosMinimizados = Object.values(grupos).map(grupo => grupo.sort().join(','));
     estadosMinimizados = Array.from(new Set(estadosMinimizados)); // Remove duplicatas
 
-    // Re-criar a tabela de transições minimizada
+    //recria tabela minimizada
     const transicoesMinimizadas = {};
     const finaisMinimizados = new Set();
     let estadoInicialMinimizado = '';
@@ -94,19 +89,12 @@ function minimizarAFDDireto(afd) {
     return afdMinimizado;
 }
 
-/**
- * Minimiza um AFD convertido de um AFN.
- * @param {Object} afd - O AFD a ser minimizado.
- * @returns {AFD} - O AFD minimizado.
- */
-
-//-------------------------------------------------------------------------------------
 
 
 function minimizarAFDConvertido(afd) {
     const { estados, alfabeto, transicoes, estadoInicial, estadosFinais } = afd;
 
-    // Passo 1: Inicializar a tabela de distinção
+    
     let distincoes = {};
     estados.forEach((e1, i) => {
         estados.slice(i + 1).forEach(e2 => {
@@ -115,7 +103,7 @@ function minimizarAFDConvertido(afd) {
         });
     });
 
-    // Passo 2: Refinar a tabela de distinção
+   
     let alterou;
     do {
         alterou = false;
@@ -138,7 +126,7 @@ function minimizarAFDConvertido(afd) {
         });
     } while (alterou);
 
-    // Passo 3: Agrupar estados indistinguíveis
+   
     let grupos = {};
     estados.forEach(e1 => {
         const grupo = Object.keys(grupos).find(grp => {
@@ -151,11 +139,11 @@ function minimizarAFDConvertido(afd) {
         }
     });
 
-    // Corrigir agrupamento para a forma desejada
+    
     let estadosMinimizados = Object.values(grupos).map(grupo => grupo.sort().join(','));
-    estadosMinimizados = Array.from(new Set(estadosMinimizados)); // Remove duplicatas
+    estadosMinimizados = Array.from(new Set(estadosMinimizados)); 
 
-    // Re-criar a tabela de transições minimizada
+    
     const transicoesMinimizadas = {};
     const finaisMinimizados = new Set();
     let estadoInicialMinimizado = '';

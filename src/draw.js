@@ -1,4 +1,4 @@
-const graphviz = require('graphviz');
+/*const graphviz = require('graphviz');
 const fs = require('fs');
 const path = require('path');
 
@@ -242,4 +242,4 @@ module.exports = {
     gerarImagemAFD,
     gerarImagemAFNParaAFD,
     gerarImagemAFDMinimizado
-};
+};*/
