@@ -4,6 +4,16 @@ const AFNtoAFD = require('./core/converter');
 const { simularAFN, simularAFD } = require('./core/aceita');
 const { minimizarAFDDireto, minimizarAFDConvertido } = require('./core/minimizacao');
 const AFD = require('./core/afd');
+const { executarMaquinaTuring } = require('./core/MT'); 
+const { executarMaquinaTuringUnaria } = require('./core/MTunario');
+const { Console } = require('console');
+/*const { 
+    gerarImagemAFN, 
+    gerarImagemAFD, 
+    gerarImagemAFNParaAFD, 
+    gerarImagemAFDMinimizado 
+} = require('./draw');*/
+
 
 let afn = null;
 let afd = null;
@@ -65,6 +75,8 @@ function criarAFN(callback) {
                         console.log('Estado Inicial:', afn.estadoInicial);
                         console.log('Estados Finais:', afn.estadosFinais);
 
+                        //gerarImagemAFN(afn);
+
                         callback();
                     });
                 });
@@ -98,6 +110,8 @@ function criarAFD(callback) {
                         console.log('Estado Inicial:', afd.estadoInicial);
                         console.log('Estados Finais:', afd.estadosFinais);
 
+                        //gerarImagemAFD(afd);
+
                         callback();
                     });
                 });
@@ -116,6 +130,9 @@ function converterAFNtoAFD(callback) {
         console.log('Transições do AFD:', afd.transicoes);
         console.log('Estado inicial do AFD:', afd.estadoInicial);
         console.log('Estados finais do AFD:', afd.estadosFinais);
+
+        //gerarImagemAFNParaAFD(afd);
+
     } else {
         console.log('\nPor favor, crie um AFN primeiro.');
     }
@@ -162,21 +179,45 @@ function minimizarAFD(callback) {
         console.log('Transições do AFD minimizado:', afdMinimizado.transicoes);
         console.log('Estado inicial do AFD minimizado:', afdMinimizado.estadoInicial);
         console.log('Estados finais do AFD minimizado:', afdMinimizado.estadosFinais);
+
+        //gerarImagemAFDMinimizado(afdMinimizado);
+
     } else {
         console.log('\nPor favor, crie um AFN e converta-o para AFD primeiro.');
     }
     callback();
 }
 
-//exibe o menu de ações
+// Função para executar a Máquina de Turing
+function executarMaquina(callback) {
+    rl.question('Digite a fita para a Máquina de Turing: ', (fita) => {
+        executarMaquinaTuring(fita);
+        callback();
+    });
+}
+
+
+function executarMaquinaUnaria(callback) {
+    rl.question('Digite a fita para a Máquina de Turing: ', (fita) => {
+        executarMaquinaTuringUnaria(fita);
+        callback();
+    });
+}
+
+
+// Exibe o menu de ações
 function exibirMenu() {
+    console.log('▄▀█ █░█ ▀█▀ █▀█ █▀▄▀█ ▄▀█ ▀█▀ █▀█ █ ▀▄▀');
+    console.log('█▀█ █▄█ ░█░ █▄█ █░▀░█ █▀█ ░█░ █▀▄ █ █░█');
     console.log('\n★★★★★★ MENU DE AÇÕES ★★★★★★★');
     console.log('1. Criar AFN');
     console.log('2. Criar AFD');
     console.log('3. Converter AFN para AFD');
     console.log('4. Simular aceitação de palavra');
     console.log('5. Minimizar AFD');
-    console.log('6. Sair');
+    console.log('6. Executar Máquina de Turing de Cópia'); 
+    console.log('7. Executar Máquina de Turing Unária');
+    console.log('8. Sair.');
     rl.question('Escolha uma opção: ', (opcao) => {
         switch (opcao) {
             case '1':
@@ -195,8 +236,14 @@ function exibirMenu() {
                 minimizarAFD(exibirMenu);
                 break;
             case '6':
-                rl.close();
+                executarMaquina(exibirMenu); 
                 break;
+            case '7':
+                executarMaquinaUnaria(exibirMenu);
+                break;
+            case '8':
+                rl.close();
+                break;    
             default:
                 console.log('Opção inválida. Tente novamente.');
                 exibirMenu();
